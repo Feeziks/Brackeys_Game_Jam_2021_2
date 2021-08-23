@@ -57,6 +57,7 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\CameraControls.cs" />
     <Compile Include="Assets\Inputs\InputController.cs" />
+    <Compile Include="Assets\Scripts\DayNightCycle.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
