@@ -7,10 +7,8 @@ public class SO_Ability : ScriptableObject
 {
   public string abilityName;
   public Sprite abilitySprite;
-
   public float abilityCooldown;
 
-  public AbilityManager abilityManager;
-
+  public GameObject abilityManager;
   public SO_ScriptableAction action;
 }

@@ -7,7 +7,8 @@ public class EventManager : MonoBehaviour
   public delegate void AbilityCastAction(AbilityCastType data);
   public static event AbilityCastAction abilityCastEvent;
 
-
+  public delegate void ScoreChangeAction(int value);
+  public static event ScoreChangeAction scoreChangeEvent;
 
 
 
@@ -16,5 +17,10 @@ public class EventManager : MonoBehaviour
   public void OnAbilityCast(AbilityCastType data)
   {
     abilityCastEvent(data);
+  }
+
+  public void OnScoreChange(int value)
+  {
+    scoreChangeEvent(value);
   }
 }

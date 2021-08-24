@@ -10,11 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 91d30f84d4df40a41a48b9a771b9563d, type: 3}
-  m_Name: Asteroid
+  m_Name: Asteroid_ACtion
   m_EditorClassIdentifier: 
-  abilityManagerObject: {fileID: 0}
   asteroidModel: {fileID: 0}
-  delayBeforeCast: 0
-  timeToImpact: 0
-  timeDamageRemains: 0
-  damageRadius: 0
+  delayBeforeCast: 1.5
+  timeToImpact: 1
+  timeDamageRemains: 5
+  damageRadius: 10
