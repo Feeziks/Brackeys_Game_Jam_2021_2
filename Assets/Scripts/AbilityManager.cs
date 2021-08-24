@@ -4,11 +4,13 @@ using UnityEngine;
 
 public class AbilityManager : MonoBehaviour
 {
+  public Camera gameplayCamera;
 
   public List<SO_Ability> allAbilities;
   public InputController inputs;
 
   private SO_Ability[] currentAbilities;
+  public int currSelectedAbility;
 
   #region Unity Methods
   private void Awake()
@@ -17,6 +19,7 @@ public class AbilityManager : MonoBehaviour
     InitializeAllAbilities();
 
     currentAbilities = new SO_Ability[6];
+    currSelectedAbility = -1;
   }
 
   private void Start()
@@ -51,34 +54,54 @@ public class AbilityManager : MonoBehaviour
   {
     if(inputs.click)
     {
-      int abilityIdx = GetAbilityIndex();
-      if(abilityIdx == -1)
+      inputs.click = false;
+      if(currSelectedAbility == -1)
       {
-        Debug.Log("Must select an ability before casting!");
+        Debug.Log("Must select an ability before casting!\nPlease use hotkeys 1 through 6 or select the ability through the UI");
         return;
       }
 
-      inputs.click = false;
-      Debug.Log("Casting spell: " + abilityIdx);
-      inputs.abilities[abilityIdx] = false;
+      //If our raycast target is NOT the planet dont cast
+      Vector3 HitPosition = GetMousePositionOnPlanet();
+      if (HitPosition != Vector3.zero)
+      {
+        Debug.Log("Casting spell: " + currSelectedAbility + "\nAt position: " + HitPosition);
+        currSelectedAbility = -1;
+      }
     }
   }
 
-  private int GetAbilityIndex()
+  private Vector3 GetMousePositionOnPlanet()
   {
-    int none = -1;
-    for(int i = 0; i < inputs.abilities.Length; i++)
+    Ray r = gameplayCamera.ScreenPointToRay(Input.mousePosition);
+    RaycastHit hit;
+    if(Physics.Raycast(r, out hit, 1000))
     {
-      if (inputs.abilities[i])
-        return i;
+      return hit.transform.position;
     }
-    return none;
+
+    return Vector3.zero;
   }
 
   #endregion
 
+  #region Functions for Cast from UI
+  public void SelectAbilityFromUI(int abilityNum)
+  {
+    currSelectedAbility = abilityNum;
+  }
+
+  #endregion
 
   #region Functions For Send Message
+
+  public void HotkeyPressed(int abilityIdx)
+  {
+    //I dont know why this gross work around is required but I cant send a message with int 0 for some reason
+    if (abilityIdx == -1)
+      abilityIdx = 0;
+    currSelectedAbility = abilityIdx;
+  }
 
   public void AsteroidAbility(AbilityCastType data)
   {
@@ -86,7 +109,6 @@ public class AbilityManager : MonoBehaviour
   }
 
   #endregion
-
 
   #region Coroutines
 

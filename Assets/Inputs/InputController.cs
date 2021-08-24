@@ -7,8 +7,12 @@ public class InputController : MonoBehaviour
 {
   public Vector2 movement;
   public bool click;
-  public bool[] abilities = new bool[6];
+  private AbilityManager abilityManager;
 
+  private void Start()
+  {
+    abilityManager = FindObjectOfType(typeof(AbilityManager)) as AbilityManager;
+  }
 
   public void OnMovement(InputAction.CallbackContext context)
   {
@@ -27,8 +31,7 @@ public class InputController : MonoBehaviour
   {
     if(context.started)
     {
-      ClearAbilities();
-      abilities[0] = true;
+      abilityManager.SendMessage("HotkeyPressed", (int)-1);
     }
   }
 
@@ -36,8 +39,7 @@ public class InputController : MonoBehaviour
   {
     if (context.started)
     {
-      ClearAbilities();
-      abilities[1] = true;
+      abilityManager.SendMessage("HotkeyPressed", 1);
     }
   }
 
@@ -45,8 +47,7 @@ public class InputController : MonoBehaviour
   {
     if (context.started)
     {
-      ClearAbilities();
-      abilities[2] = true;
+      abilityManager.SendMessage("HotkeyPressed", 2);
     }
   }
 
@@ -54,8 +55,7 @@ public class InputController : MonoBehaviour
   {
     if (context.started)
     {
-      ClearAbilities();
-      abilities[3] = true;
+      abilityManager.SendMessage("HotkeyPressed", 3);
     }
   }
 
@@ -63,8 +63,7 @@ public class InputController : MonoBehaviour
   {
     if (context.started)
     {
-      ClearAbilities();
-      abilities[4] = true;
+      abilityManager.SendMessage("HotkeyPressed", 4);
     }
   }
 
@@ -72,16 +71,8 @@ public class InputController : MonoBehaviour
   {
     if (context.started)
     {
-      ClearAbilities();
-      abilities[5] = true;
+      abilityManager.SendMessage("HotkeyPressed", 5);
     }
   }
 
-  public void ClearAbilities()
-  {
-    for(int i = 0; i < abilities.Length; i++)
-    {
-      abilities[i] = false;
-    }
-  }
 }
