@@ -65,6 +65,7 @@ public class AbilityManager : MonoBehaviour
       if (HitPosition != Vector3.zero)
       {
         Debug.Log("Casting spell: " + currSelectedAbility + "\nAt position: " + HitPosition);
+        allAbilities[currSelectedAbility].action.PerformAction(gameObject, allAbilities[currSelectedAbility]);
         currSelectedAbility = -1;
       }
     }
@@ -113,10 +114,23 @@ public class AbilityManager : MonoBehaviour
 
   public IEnumerator AsteroidAbility_Coroutine(AbilityCastType data)
   {
+    SO_Ability_Asteroid asteroidAbility = (SO_Ability_Asteroid)data.ability.action;
+    GameObject asteroidGo = Instantiate(asteroidAbility.asteroidModel);
+    asteroidGo.transform.position = gameplayCamera.transform.position + gameplayCamera.transform.forward * -1f * 20f; //Should Spawn behind the camera
+    asteroidGo.transform.LookAt(Vector3.zero);
+    float velocity = Vector3.Distance(Vector3.zero, asteroidGo.transform.position) / data.ability.actionDuration;
 
-    Debug.Log("Performing Asteroid Ability");
-    yield return new WaitForSecondsRealtime(1f);
-    Debug.Log("Asteroid Action Performed");
+
+    yield return new WaitForSecondsRealtime(data.ability.delayBeforeAction);
+    float startTime = Time.realtimeSinceStartup;
+    float endTime = startTime + data.ability.actionDuration;
+    
+    while(Time.realtimeSinceStartup < endTime)
+    {
+      asteroidGo.transform.position += asteroidGo.transform.forward * velocity * Time.deltaTime;
+      yield return null;
+    }
+
     yield return null;
   }
 

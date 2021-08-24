@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91d30f84d4df40a41a48b9a771b9563d, type: 3}
   m_Name: Asteroid_Ability_Action
   m_EditorClassIdentifier: 
-  asteroidModel: {fileID: 0}
-  delayBeforeCast: 0
-  timeToImpact: 0
-  timeDamageRemains: 0
-  damageRadius: 0
+  asteroidModel: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+  delayBeforeCast: 1
+  timeToImpact: 1
+  timeDamageRemains: 5
+  damageRadius: 15

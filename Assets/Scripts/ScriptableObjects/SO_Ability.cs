@@ -10,5 +10,8 @@ public class SO_Ability : ScriptableObject
   public string abilityToolTip;
   public float abilityCooldown;
 
+  public float delayBeforeAction;
+  public float actionDuration;
+
   public SO_ScriptableAction action;
 }

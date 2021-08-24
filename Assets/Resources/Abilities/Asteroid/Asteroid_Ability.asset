@@ -17,4 +17,6 @@ MonoBehaviour:
   abilityToolTip: Launch an Asteroid at this world's inhabitants! Cause chaos with
     destruction!
   abilityCooldown: 10
+  delayBeforeAction: 1
+  actionDuration: 1
   action: {fileID: 11400000, guid: 730ff4604f2c7b44e8cb187f9994e2d2, type: 2}

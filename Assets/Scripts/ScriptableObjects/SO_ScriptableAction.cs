@@ -4,5 +4,5 @@ using UnityEngine;
 
 public abstract class SO_ScriptableAction : ScriptableObject
 {
-  public abstract void PerformAction(GameObject abilityManager);
+  public abstract void PerformAction(GameObject abilityManager, SO_Ability callingAbility);
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 using TMPro;
 
 public class UIManager : MonoBehaviour
@@ -22,6 +23,13 @@ public class UIManager : MonoBehaviour
   public TextMeshProUGUI toolTipHeader;
   public TextMeshProUGUI ToolTipBody;
 
+  public RectTransform chaosOrderPanel;
+  public RectTransform chaosBar;
+  public RectTransform orderBar;
+
+  public TextMeshProUGUI scoreText;
+  private int score;
+
   #endregion
 
   #region Unity Methods
@@ -40,6 +48,9 @@ public class UIManager : MonoBehaviour
       abilityGameObjectToAbility[go] = abilities[idx];
       idx++;
     }
+
+    score = 0;
+    UpdateScoreText(score);
   }
 
   private void Awake()
@@ -73,11 +84,14 @@ public class UIManager : MonoBehaviour
   private void OnEnable()
   {
     EventManager.abilityCastEvent += OnAbilityCast;
+    EventManager.scoreChangeEvent += UpdateScoreText;
   }
 
   private void OnDisable()
   {
     EventManager.abilityCastEvent -= OnAbilityCast;
+    EventManager.scoreChangeEvent -= UpdateScoreText;
+
   }
 
   private void OnAbilityCast(AbilityCastType data)
@@ -125,6 +139,24 @@ public class UIManager : MonoBehaviour
     toolTipGO.transform.position = Input.mousePosition;
     toolTipHeader.text = abilityGameObjectToAbility[abilityGameObject].abilityName;
     ToolTipBody.text = abilityGameObjectToAbility[abilityGameObject].abilityToolTip;
+  }
+
+  #endregion
+
+  #region Chaos / Order and Score
+
+  public void UpdateChaosAndOrder(float chaos, float order)
+  {
+    //1f == full; 0f == empty;
+
+    chaosBar.sizeDelta = new Vector2(chaosOrderPanel.rect.width / chaos, chaosOrderPanel.rect.height);
+    orderBar.sizeDelta = new Vector2(chaosOrderPanel.rect.width / chaos, chaosOrderPanel.rect.height);
+  }
+
+  public void UpdateScoreText(int scoreChange)
+  {
+    score += scoreChange;
+    scoreText.text = score.ToString();
   }
 
   #endregion
