@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using TMPro;
 
 public class UIManager : MonoBehaviour
 {
@@ -12,8 +13,14 @@ public class UIManager : MonoBehaviour
   private AbilityManager abilityManager;
   
   private Dictionary<GameObject, int> abilityGameObjectToIndex;
+  private Dictionary<GameObject, SO_Ability> abilityGameObjectToAbility;
   public List<GameObject> abilityGameObjects;
   public List<int> abilityIndices;
+  public List<SO_Ability> abilities;
+
+  public GameObject toolTipGO;
+  public TextMeshProUGUI toolTipHeader;
+  public TextMeshProUGUI ToolTipBody;
 
   #endregion
 
@@ -23,12 +30,15 @@ public class UIManager : MonoBehaviour
   {
     hovered = null;
     abilityManager = FindObjectOfType(typeof(AbilityManager)) as AbilityManager;
+    abilityGameObjectToAbility = new Dictionary<GameObject, SO_Ability>();
     abilityGameObjectToIndex = new Dictionary<GameObject, int>();
 
     int idx = 0;
     foreach(GameObject go in abilityGameObjects)
     {
-      abilityGameObjectToIndex[go] = abilityIndices[idx++];
+      abilityGameObjectToIndex[go] = abilityIndices[idx];
+      abilityGameObjectToAbility[go] = abilities[idx];
+      idx++;
     }
   }
 
@@ -42,9 +52,9 @@ public class UIManager : MonoBehaviour
     if (EventSystem.current.IsPointerOverGameObject())
     {
       hovered = GetHoveredObject(GetPointerRaycastResults());
+      DisplayToolTip(hovered);
       if(Input.GetMouseButtonDown(0))
       {
-        //TODO: Get ability number from the ui hover/press
         abilityManager.SendMessage("SelectAbilityFromUI", abilityGameObjectToIndex[hovered]);
       }
 
@@ -52,6 +62,7 @@ public class UIManager : MonoBehaviour
     else
     {
       hovered = null;
+      toolTipGO.SetActive(false);
     }
   }
 
@@ -101,6 +112,19 @@ public class UIManager : MonoBehaviour
     List<RaycastResult> result = new List<RaycastResult>();
     EventSystem.current.RaycastAll(eventData, result);
     return result;
+  }
+
+  public void DisplayToolTip(GameObject abilityGameObject)
+  {
+    if (!abilityGameObjectToAbility.ContainsKey(abilityGameObject))
+      return;
+
+    toolTipGO.SetActive(true);
+    //RectTransform rt = toolTipGO.GetComponent(typeof(RectTransform)) as RectTransform;
+    //rt.anchoredPosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+    toolTipGO.transform.position = Input.mousePosition;
+    toolTipHeader.text = abilityGameObjectToAbility[abilityGameObject].abilityName;
+    ToolTipBody.text = abilityGameObjectToAbility[abilityGameObject].abilityToolTip;
   }
 
   #endregion

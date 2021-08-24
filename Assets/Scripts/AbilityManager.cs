@@ -45,7 +45,6 @@ public class AbilityManager : MonoBehaviour
     foreach(Object tempAbility in temp)
     {
       SO_Ability ability = (SO_Ability)tempAbility;
-      ability.abilityManager = gameObject;
       allAbilities.Add(ability);
     }
   }
