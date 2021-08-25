@@ -65,6 +65,9 @@
     <Compile Include="Assets\Inputs\InputController.cs" />
     <Compile Include="Assets\Scripts\DayNightCycle.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjects\SO_ScriptableAction.cs" />
+    <Compile Include="Assets\Scripts\MeepleManager.cs" />
+    <Compile Include="Assets\Scripts\Meeple.cs" />
+    <Compile Include="Assets\Scripts\GameManager.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\TextMesh Pro\Resources\Shaders\TMPro.cginc" />

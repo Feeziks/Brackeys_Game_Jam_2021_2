@@ -15,3 +15,12 @@ public class AbilityCastType
     ability = a;
   }
 }
+
+
+public enum GameplayTimeStatus
+{
+  paused    = 0,
+  standard  = 1,
+  dbl       = 2,
+  triple    = 3
+}
