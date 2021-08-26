@@ -22,7 +22,7 @@ public class CameraControls : MonoBehaviour
     if(inputs.movement != Vector2.zero)
     {
       //Rotate the camera parent object and the camera will follow
-      transform.Rotate(new Vector3(0f, inputs.movement.x, inputs.movement.y), rotationSpeed * Time.deltaTime);
+      transform.Rotate(new Vector3(0f, -1f * inputs.movement.x, inputs.movement.y), rotationSpeed * Time.deltaTime);
     }
   }
 

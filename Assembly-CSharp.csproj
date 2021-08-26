@@ -55,19 +55,20 @@
     <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio Tools for Unity\16.0\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\GameManager.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjects\SO_Ability.cs" />
     <Compile Include="Assets\Scripts\AbilityManager.cs" />
+    <Compile Include="Assets\Scripts\Meeple.cs" />
     <Compile Include="Assets\Scripts\EventManager.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjects\SO_Ability_Asteroid.cs" />
+    <Compile Include="Assets\Scripts\MeepleManager.cs" />
     <Compile Include="Assets\Scripts\CameraControls.cs" />
     <Compile Include="Assets\Scripts\UIManager.cs" />
     <Compile Include="Assets\Scripts\Types.cs" />
     <Compile Include="Assets\Inputs\InputController.cs" />
     <Compile Include="Assets\Scripts\DayNightCycle.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjects\SO_ScriptableAction.cs" />
-    <Compile Include="Assets\Scripts\MeepleManager.cs" />
-    <Compile Include="Assets\Scripts\Meeple.cs" />
-    <Compile Include="Assets\Scripts\GameManager.cs" />
+    <Compile Include="Assets\Scripts\Tribe.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\TextMesh Pro\Resources\Shaders\TMPro.cginc" />
