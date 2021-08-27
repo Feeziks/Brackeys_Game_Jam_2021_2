@@ -5,6 +5,7 @@ using UnityEngine;
 public class AbilityManager : MonoBehaviour
 {
   public Camera gameplayCamera;
+  public GameObject aoeProjector;
 
   public List<SO_Ability> allAbilities;
   public InputController inputs;
@@ -31,6 +32,16 @@ public class AbilityManager : MonoBehaviour
   {
     //Check our inputs for user clicks
     HandleUserInput();
+
+    //Display the AOE of the currently selected ability
+    if(currSelectedAbility != -1)
+    {
+      DisplayAbilityAOE();
+    }
+    else
+    {
+      aoeProjector.SetActive(false);
+    }
   }
 
 
@@ -73,7 +84,8 @@ public class AbilityManager : MonoBehaviour
 
   private Vector3 GetMousePositionOnPlanet()
   {
-    Ray r = gameplayCamera.ScreenPointToRay(Input.mousePosition);
+    Vector3 mousePos = gameplayCamera.ScreenToWorldPoint(Input.mousePosition);
+    Ray r = new Ray(mousePos, -1f * mousePos);
     RaycastHit hit;
     if(Physics.Raycast(r, out hit, 1000))
     {
@@ -81,6 +93,20 @@ public class AbilityManager : MonoBehaviour
     }
 
     return Vector3.zero;
+  }
+
+  private void DisplayAbilityAOE()
+  {
+    SO_Ability ability = allAbilities[currSelectedAbility];
+
+    //Show the AOE circle with center at mouse position and radius from ability
+    Vector3 pos = GetMousePositionOnPlanet();
+    float radius = ability.abilityRadius;
+
+    aoeProjector.SetActive(true);
+    aoeProjector.transform.position = pos + (-1f * pos) * 10f;
+    aoeProjector.transform.LookAt(Vector3.zero);
+
   }
 
   #endregion

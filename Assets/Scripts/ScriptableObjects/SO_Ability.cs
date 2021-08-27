@@ -9,6 +9,7 @@ public class SO_Ability : ScriptableObject
   public Sprite abilitySprite;
   public string abilityToolTip;
   public float abilityCooldown;
+  public float abilityRadius;
 
   public float delayBeforeAction;
   public float actionDuration;

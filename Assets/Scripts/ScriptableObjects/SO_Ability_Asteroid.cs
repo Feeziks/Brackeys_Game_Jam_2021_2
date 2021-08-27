@@ -8,7 +8,6 @@ public class SO_Ability_Asteroid : SO_ScriptableAction
   public GameObject asteroidModel;
 
   public float timeDamageRemains;
-  public float damageRadius;
 
   public override void PerformAction(GameObject abilityManager, SO_Ability callingAbility)
   {
