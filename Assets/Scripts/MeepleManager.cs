@@ -10,12 +10,16 @@ public class MeepleManager : MonoBehaviour
   public float meepleSpawnTimer;
   private List<GameObject> spawnedMeeples;
 
+  private List<Vector3> previousSpawnPoints;
+  private float sphereLimiterRadius = 6f;
+
   private GameManager gm;
 
   // Start is called before the first frame update
   void Start()
   {
     spawnedMeeples = new List<GameObject>();
+    previousSpawnPoints = new List<Vector3>();
 
     gm = FindObjectOfType(typeof(GameManager)) as GameManager;
 
@@ -35,11 +39,49 @@ public class MeepleManager : MonoBehaviour
 
   private Vector3 GetNewMeeplePosition()
   {
-    //Return a random position on the surface of the sphere? Try to be close to previous meeples? Also dont place them into the ocean 
-    Vector3 randomPointOnSphereSurface = Random.onUnitSphere * planet.transform.localScale.x;
+    Vector3 spawnPosition;
+    if (spawnedMeeples.Count < 6)
+    {
+      bool nearOtherBoid = false;
+      do
+      {
+        spawnPosition = Random.onUnitSphere * planet.transform.lossyScale.x / 2f;
 
+        foreach (Vector3 v in previousSpawnPoints)
+        {
+          if (Vector3.Distance(spawnPosition, v) < (sphereLimiterRadius * 2f))
+          {
+            nearOtherBoid = true;
+          }
+        }
+      } while (nearOtherBoid);
+      
+    }
+    else
+    {
+      //Every nth meeple should be a part of another meeples group
+      if(spawnedMeeples.Count % 4 == 0)
+      {
+        spawnPosition = previousSpawnPoints[(int)Random.Range(0f, spawnedMeeples.Count)];
+      }
+      //Otherwise spawn randomly, could be part of a group, could not be
+      else
+      {
+        spawnPosition = Random.onUnitSphere * planet.transform.lossyScale.x / 2f;
 
-    return randomPointOnSphereSurface;
+        foreach (Vector3 v in previousSpawnPoints)
+        {
+          if (Vector3.Distance(spawnPosition, v) < (sphereLimiterRadius * 2f))
+          {
+            spawnPosition = v;
+            break;
+          }
+        }
+      }
+    }
+
+    previousSpawnPoints.Add(spawnPosition);
+    return spawnPosition;
   }
 
   #region Co-routines
@@ -63,8 +105,8 @@ public class MeepleManager : MonoBehaviour
         m.planet = planet;
 
         spawnedMeeples.Add(newMeeple);
-        yield return new WaitForSeconds(meepleSpawnTimer / (float)gm.timeState);
       }
+      yield return new WaitForSeconds(meepleSpawnTimer / (float)gm.timeState);
     }
     yield return null;
   }
