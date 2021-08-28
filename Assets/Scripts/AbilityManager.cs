@@ -5,13 +5,18 @@ using UnityEngine;
 public class AbilityManager : MonoBehaviour
 {
   public Camera gameplayCamera;
-  public GameObject aoeProjector;
+  public GameObject aoeIndicator;
 
   public List<SO_Ability> allAbilities;
   public InputController inputs;
 
   private SO_Ability[] currentAbilities;
   public int currSelectedAbility;
+
+  public Vector3 mousePosition;
+  public Ray mouseRay;
+
+  public GameObject planet;
 
   #region Unity Methods
   private void Awake()
@@ -40,7 +45,7 @@ public class AbilityManager : MonoBehaviour
     }
     else
     {
-      aoeProjector.SetActive(false);
+      aoeIndicator.SetActive(false);
     }
   }
 
@@ -84,15 +89,22 @@ public class AbilityManager : MonoBehaviour
 
   private Vector3 GetMousePositionOnPlanet()
   {
-    Vector3 mousePos = gameplayCamera.ScreenToWorldPoint(Input.mousePosition);
-    Ray r = new Ray(mousePos, -1f * mousePos);
+    /*
+    Vector3 mousePos = gameplayCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, -50f));
+    Ray r = new Ray(mousePos, gameplayCamera.transform.forward);
+
     RaycastHit hit;
     if(Physics.Raycast(r, out hit, 1000))
     {
-      return hit.transform.position;
+      return hit.point;
     }
 
     return Vector3.zero;
+    */
+
+    Vector3 mousePos = gameplayCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 100f));
+    Collider c = planet.GetComponent(typeof(Collider)) as Collider;
+    return c.ClosestPoint(mousePos);
   }
 
   private void DisplayAbilityAOE()
@@ -101,12 +113,13 @@ public class AbilityManager : MonoBehaviour
 
     //Show the AOE circle with center at mouse position and radius from ability
     Vector3 pos = GetMousePositionOnPlanet();
+    mousePosition = pos;
+    mouseRay = new Ray(pos, -pos);
     float radius = ability.abilityRadius;
 
-    aoeProjector.SetActive(true);
-    aoeProjector.transform.position = pos + (-1f * pos) * 10f;
-    aoeProjector.transform.LookAt(Vector3.zero);
-
+    aoeIndicator.SetActive(true);
+    aoeIndicator.transform.position = pos;
+    aoeIndicator.transform.localScale = new Vector3(radius, radius, radius);
   }
 
   #endregion
@@ -134,6 +147,15 @@ public class AbilityManager : MonoBehaviour
     StartCoroutine(AsteroidAbility_Coroutine(data));
   }
 
+  public void SnakeAbility(AbilityCastType data)
+  {
+    SO_Ability_Snake snake = (SO_Ability_Snake)data.ability.action;
+    GameObject snakeGO = Instantiate(snake.snakeModel);
+    snakeGO.transform.parent = gameObject.transform;
+    snakeGO.transform.position = mousePosition;
+    Destroy(snakeGO, data.ability.actionDuration);
+  }
+
   #endregion
 
   #region Coroutines
@@ -142,9 +164,10 @@ public class AbilityManager : MonoBehaviour
   {
     SO_Ability_Asteroid asteroidAbility = (SO_Ability_Asteroid)data.ability.action;
     GameObject asteroidGo = Instantiate(asteroidAbility.asteroidModel);
-    asteroidGo.transform.position = gameplayCamera.transform.position + gameplayCamera.transform.forward * -1f * 20f; //Should Spawn behind the camera
+    asteroidGo.transform.position = mousePosition * 4f; //+ (mousePosition * Vector3.Distance(gameplayCamera.transform.position, Vector3.zero));//gameplayCamera.transform.position + gameplayCamera.transform.forward * -1f * 20f; //Should Spawn behind the camera
     asteroidGo.transform.LookAt(Vector3.zero);
-    float velocity = Vector3.Distance(Vector3.zero, asteroidGo.transform.position) / data.ability.actionDuration;
+    asteroidGo.layer = LayerMask.NameToLayer("Ignore Raycast");
+    float velocity = Vector3.Distance(mousePosition, asteroidGo.transform.position) / data.ability.actionDuration;
 
 
     yield return new WaitForSecondsRealtime(data.ability.delayBeforeAction);
@@ -157,6 +180,7 @@ public class AbilityManager : MonoBehaviour
       yield return null;
     }
 
+    Destroy(asteroidGo, data.ability.actionDuration);
     yield return null;
   }
 

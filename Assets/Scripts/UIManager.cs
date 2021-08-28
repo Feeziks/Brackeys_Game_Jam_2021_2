@@ -49,6 +49,8 @@ public class UIManager : MonoBehaviour
       idx++;
     }
 
+    UpdateAbilitySprites();
+
     score = 0;
     UpdateScoreText(score);
   }
@@ -130,6 +132,9 @@ public class UIManager : MonoBehaviour
 
   public void DisplayToolTip(GameObject abilityGameObject)
   {
+    if(abilityGameObject == null)
+        return;
+
     if (!abilityGameObjectToAbility.ContainsKey(abilityGameObject))
       return;
 
@@ -139,6 +144,7 @@ public class UIManager : MonoBehaviour
     toolTipGO.transform.position = Input.mousePosition;
     toolTipHeader.text = abilityGameObjectToAbility[abilityGameObject].abilityName;
     ToolTipBody.text = abilityGameObjectToAbility[abilityGameObject].abilityToolTip;
+    ToolTipBody.text += "\n" + "Cooldown: " + abilityGameObjectToAbility[abilityGameObject].abilityCooldown;
   }
 
   #endregion
@@ -161,4 +167,17 @@ public class UIManager : MonoBehaviour
 
   #endregion
 
+  #region helpers
+
+  private void UpdateAbilitySprites()
+  {
+    foreach(GameObject go in abilityGameObjects)
+    {
+      Image im = go.GetComponent(typeof(Image)) as Image;
+
+      im.sprite = abilityGameObjectToAbility[go].abilitySprite;
+    }
+  }
+
+  #endregion
 }
