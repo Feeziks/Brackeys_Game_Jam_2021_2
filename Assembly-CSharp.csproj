@@ -69,9 +69,12 @@
     <Compile Include="Assets\Scripts\Types.cs" />
     <Compile Include="Assets\Scripts\Tribe.cs" />
     <Compile Include="Assets\Inputs\InputController.cs" />
+    <Compile Include="Assets\Resources\Abilities\SowDivision\SO_Sow_Division_Action.cs" />
     <Compile Include="Assets\Scripts\DayNightCycle.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjects\SO_ScriptableAction.cs" />
-    <Compile Include="Assets\Resources\Abilities\SowDivision\SO_Sow_Division_Action.cs" />
+    <Compile Include="Assets\Resources\Abilities\Plague\SO_Plague_Ability_Action.cs" />
+    <Compile Include="Assets\Resources\Abilities\Madness\SO_Madness_Ability_Action.cs" />
+    <Compile Include="Assets\Resources\Abilities\Tornado\SO_Tornado_Ability_Action.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\TextMesh Pro\Resources\Shaders\TMPro.cginc" />

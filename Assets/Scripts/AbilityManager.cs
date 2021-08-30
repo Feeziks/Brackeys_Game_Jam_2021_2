@@ -245,6 +245,67 @@ public class AbilityManager : MonoBehaviour
     }
   }
 
+  public void PlagueAbility(AbilityCastType data)
+  {
+    if(abilityCooldownTimers[data.ability] <= 0f)
+    {
+      SO_Plague_Ability_Action plague = (SO_Plague_Ability_Action)data.ability.action;
+      GameObject abilityGo = Instantiate(plague.model);
+      abilityGo.layer = LayerMask.NameToLayer("Ability");
+      abilityGo.transform.parent = gameObject.transform;
+      abilityGo.transform.position = mousePosition;
+      abilityGo.transform.localScale = new Vector3(3, 3, 3);
+      Destroy(abilityGo, data.ability.actionDuration);
+      abilityCooldownTimers[data.ability] = data.ability.abilityCooldown;
+      ApplyAbilityToMeeplesInRadius(data, abilityGo);
+    }
+    else
+    {
+      eManager.OnErrorEvent(data.ability.abilityName + " Is still on cooldown");
+    }
+  }
+
+  public void Madness(AbilityCastType data)
+  {
+    if(abilityCooldownTimers[data.ability] <= 0f)
+    {
+      SO_Madness_Ability_Action madness = (SO_Madness_Ability_Action)data.ability.action;
+      GameObject abilityGo = Instantiate(madness.model);
+      abilityGo.layer = LayerMask.NameToLayer("Ability");
+      abilityGo.transform.parent = gameObject.transform;
+      abilityGo.transform.position = mousePosition;
+      abilityGo.transform.localScale = new Vector3(3, 3, 3);
+      Destroy(abilityGo, data.ability.actionDuration);
+      abilityCooldownTimers[data.ability] = data.ability.abilityCooldown;
+      ApplyAbilityToMeeplesInRadius(data, abilityGo);
+    }
+    else
+    {
+      eManager.OnErrorEvent(data.ability.abilityName + " Is still on cooldown");
+    }
+  }
+
+  public void Tornado(AbilityCastType data)
+  {
+    if (abilityCooldownTimers[data.ability] <= 0f)
+    {
+      SO_Tornado_Ability_Action tornado = (SO_Tornado_Ability_Action)data.ability.action;
+      GameObject abilityGo = Instantiate(tornado.model);
+      abilityGo.layer = LayerMask.NameToLayer("Ability");
+      abilityGo.transform.parent = gameObject.transform;
+      abilityGo.transform.position = mousePosition;
+      abilityGo.transform.localScale = new Vector3(3, 3, 3);
+      Destroy(abilityGo, data.ability.actionDuration);
+      abilityCooldownTimers[data.ability] = data.ability.abilityCooldown;
+      ApplyAbilityToMeeplesInRadius(data, abilityGo);
+    }
+    else
+    {
+      eManager.OnErrorEvent(data.ability.abilityName + " Is still on cooldown");
+    }
+  }
+
+
   #endregion
 
   #region Coroutines

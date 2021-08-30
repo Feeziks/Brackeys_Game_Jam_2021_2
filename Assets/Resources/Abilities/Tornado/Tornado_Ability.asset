@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34e182c1de60c344bbc973ffd3b7979d, type: 3}
+  m_Name: Tornado_Ability
+  m_EditorClassIdentifier: 
+  abilityName: Tornado
+  abilitySprite: {fileID: 21300000, guid: ff8e17252f1274f45896eb02a7ec0c01, type: 3}
+  abilityToolTip: Toss inhabitants off the planet with gale force winds
+  abilityCooldown: 50
+  abilityRadius: 100
+  chaosInfliction: 20
+  killChance: 100
+  delayBeforeAction: 0
+  actionDuration: 20
+  action: {fileID: 11400000, guid: 1fc1d6f6f14cf8948b2140834e33d256, type: 2}

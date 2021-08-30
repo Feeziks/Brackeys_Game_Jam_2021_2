@@ -6,6 +6,7 @@ public class MeepleManager : MonoBehaviour
 {
   public Mesh meepleMesh;
   public GameObject planet;
+  public Vector3 planetCenter;
 
   public float meepleSpawnTimer;
   private List<GameObject> spawnedMeeples;
@@ -42,14 +43,13 @@ public class MeepleManager : MonoBehaviour
   private Vector3 GetNewMeeplePosition()
   {
     Vector3 spawnPosition;
-    Vector3 planetCenter = new Vector3(12f, 109f, 130f);
     if (spawnedMeeples.Count < 6)
     {
       bool nearOtherBoid = false;
       do
       {
         nearOtherBoid = false;
-        spawnPosition = planetCenter + Random.onUnitSphere * 300f;
+        spawnPosition = planetCenter + Random.onUnitSphere * 210f;
 
         foreach (Vector3 v in previousSpawnPoints)
         {
@@ -71,7 +71,7 @@ public class MeepleManager : MonoBehaviour
       //Otherwise spawn randomly, could be part of a group, could not be
       else
       {
-        spawnPosition = planetCenter + Random.onUnitSphere * 300f;
+        spawnPosition = planetCenter + Random.onUnitSphere * 210f;
 
         foreach (Vector3 v in previousSpawnPoints)
         {
@@ -86,6 +86,12 @@ public class MeepleManager : MonoBehaviour
 
     previousSpawnPoints.Add(spawnPosition);
     return spawnPosition;
+  }
+
+  public void OnDrawGizmosSelected()
+  {
+    Gizmos.color = Color.red;
+    Gizmos.DrawWireSphere(planetCenter, 2f);
   }
 
   #region Co-routines
@@ -109,10 +115,19 @@ public class MeepleManager : MonoBehaviour
 
         Meeple m = newMeeple.AddComponent(typeof(Meeple)) as Meeple;
         m.planet = planet;
+        m.planetCenter = planetCenter;
 
         spawnedMeeples.Add(newMeeple);
       }
-      yield return new WaitForSeconds(Mathf.Max(meepleSpawnTimer / (float)gm.timeState, 0.1f));
+
+      if(gm.timeState == GameplayTimeStatus.paused)
+      {
+        yield return null;
+      }
+      else
+      {
+        yield return new WaitForSeconds(meepleSpawnTimer / (float)gm.timeState);
+      }
     }
     yield return null;
   }

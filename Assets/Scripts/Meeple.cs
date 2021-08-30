@@ -6,6 +6,7 @@ using System.Linq;
 public class Meeple : MonoBehaviour
 {
   public GameObject planet;
+  public Vector3 planetCenter;
 
   private Vector3 sphereLimiterCenter;
   private float sphereLimiterRadius = 6f;
@@ -114,10 +115,8 @@ public class Meeple : MonoBehaviour
 
   public Vector3 PlacePointOnPlanetSurface(Vector3 center)
   {
-    Vector3 ret = Vector3.zero;
-
     //Closest point on the spheres surface is the vector from sphere center to point normalized and multiplied by sphere radius
-    ret = (center - Vector3.zero).normalized;
+    Vector3 ret = (center - planetCenter).normalized;
     ret *= planet.transform.localScale.x / 2f;
 
     return ret;

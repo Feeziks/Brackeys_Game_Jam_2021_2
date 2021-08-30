@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34e182c1de60c344bbc973ffd3b7979d, type: 3}
+  m_Name: Madness_Ability
+  m_EditorClassIdentifier: 
+  abilityName: Madness
+  abilitySprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  abilityToolTip: Push these inhabitants to the brink of insanity
+  abilityCooldown: 20
+  abilityRadius: 10
+  chaosInfliction: 1
+  killChance: 2
+  delayBeforeAction: 0
+  actionDuration: 6
+  action: {fileID: 11400000, guid: 969d27f114fd26746b0367936ab40590, type: 2}

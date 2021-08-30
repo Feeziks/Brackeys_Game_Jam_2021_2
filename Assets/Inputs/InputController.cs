@@ -33,6 +33,11 @@ public class InputController : MonoBehaviour
     }
   }
 
+  public void OnEsc(InputAction.CallbackContext context)
+  {
+    Application.Quit();
+  }
+
   public void OnAbilityHotkey_1(InputAction.CallbackContext context)
   {
     if(context.started)
