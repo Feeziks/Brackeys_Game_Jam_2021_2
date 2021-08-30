@@ -29,6 +29,8 @@ public class Meeple : MonoBehaviour
 
   private GameManager gm;
 
+  private float unableToBuildTimer;
+
   // Start is called before the first frame update
   void Start()
   {
@@ -124,7 +126,7 @@ public class Meeple : MonoBehaviour
   private void Build()
   {
     //If meeples are part of a group they should build, the more meeples present the faster they build
-    if(neighbors.Count >= minTribeSizeToBuild && gm.timeState != GameplayTimeStatus.paused)
+    if(neighbors.Count >= minTribeSizeToBuild && unableToBuildTimer <= 0f && gm.timeState != GameplayTimeStatus.paused)
     {
       //Do some building
       currentlyBuilding = true;
@@ -146,6 +148,28 @@ public class Meeple : MonoBehaviour
   }
 
   #endregion
+
+  public void AbilityEffect(AbilityAffectMeepleType data)
+  {
+    unableToBuildTimer = data.duration;
+    gm.UpdateChaosOrder(data.chaosInflicted, 0f);
+    if(Random.Range(0, 100) < data.killChance)
+    {
+      Destroy(gameObject, data.duration);
+    }
+    StartCoroutine("UnableToBuildCounter");
+  }
+
+  private IEnumerator UnableToBuildCounter()
+  {
+    while(unableToBuildTimer > 0f)
+    {
+      unableToBuildTimer -= Time.deltaTime * (float)gm.timeState;
+      yield return null;
+    }
+
+    unableToBuildTimer = 0f;
+  }
 
   public void OnDrawGizmosSelected()
   {

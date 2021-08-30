@@ -10,6 +10,8 @@ public class SO_Ability : ScriptableObject
   public string abilityToolTip;
   public float abilityCooldown;
   public float abilityRadius;
+  public float chaosInfliction;
+  public float killChance;
 
   public float delayBeforeAction;
   public float actionDuration;

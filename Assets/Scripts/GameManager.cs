@@ -52,6 +52,11 @@ public class GameManager : MonoBehaviour
     eManager.OnChaosOrderChange(c, o);
   }
 
+  public void UpdateGameSpeed(int value)
+  {
+    timeState = (GameplayTimeStatus)value;
+  }
+
   #region Coroutines
 
   //Coroutine for score you get over time

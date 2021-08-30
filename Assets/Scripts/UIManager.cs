@@ -75,7 +75,7 @@ public class UIManager : MonoBehaviour
     {
       hovered = GetHoveredObject(GetPointerRaycastResults());
       DisplayToolTip(hovered);
-      if (Input.GetMouseButtonDown(0))
+      if (Input.GetMouseButtonDown(0) && abilityGameObjectToAbility.ContainsKey(hovered))
       {
         abilityManager.SendMessage("SelectAbilityFromUI", abilityGameObjectToIndex[hovered]);
       }
@@ -174,8 +174,8 @@ public class UIManager : MonoBehaviour
     float chaosPercent = chaos / (chaos + order);
     float orderPercent = order / (chaos + order);
 
-    chaosBar.sizeDelta = new Vector2(chaosPercent, chaosOrderPanel.rect.height);
-    orderBar.sizeDelta = new Vector2(orderPercent, chaosOrderPanel.rect.height);
+    chaosBar.sizeDelta = new Vector2(chaosPercent * chaosOrderPanel.rect.width, chaosOrderPanel.rect.height);
+    orderBar.sizeDelta = new Vector2(orderPercent * chaosOrderPanel.rect.width, chaosOrderPanel.rect.height);
   }
 
   public void UpdateScoreText(int scoreChange)

@@ -42,13 +42,14 @@ public class MeepleManager : MonoBehaviour
   private Vector3 GetNewMeeplePosition()
   {
     Vector3 spawnPosition;
+    Vector3 planetCenter = new Vector3(12f, 109f, 130f);
     if (spawnedMeeples.Count < 6)
     {
       bool nearOtherBoid = false;
       do
       {
         nearOtherBoid = false;
-        spawnPosition = Random.onUnitSphere * planet.transform.localScale.x * 1.3f;
+        spawnPosition = planetCenter + Random.onUnitSphere * 300f;
 
         foreach (Vector3 v in previousSpawnPoints)
         {
@@ -70,7 +71,7 @@ public class MeepleManager : MonoBehaviour
       //Otherwise spawn randomly, could be part of a group, could not be
       else
       {
-        spawnPosition = Random.onUnitSphere * planet.transform.lossyScale.x * 1.3f;
+        spawnPosition = planetCenter + Random.onUnitSphere * 300f;
 
         foreach (Vector3 v in previousSpawnPoints)
         {
@@ -97,7 +98,7 @@ public class MeepleManager : MonoBehaviour
         GameObject newMeeple = new GameObject("Meeple_" + (spawnedMeeples.Count + 1).ToString());
         newMeeple.transform.parent = transform;
         newMeeple.transform.position = GetNewMeeplePosition();
-        newMeeple.transform.localScale = new Vector3(3f, 3f, 3f);
+        newMeeple.transform.localScale = new Vector3(500f, 500f, 500f);
 
         MeshFilter mf = newMeeple.AddComponent(typeof(MeshFilter)) as MeshFilter;
         mf.mesh = meepleMesh;

@@ -16,6 +16,19 @@ public class AbilityCastType
   }
 }
 
+public class AbilityAffectMeepleType
+{
+  public float duration;
+  public float chaosInflicted;
+  public float killChance;
+
+  public AbilityAffectMeepleType(float d, float cI, float k)
+  {
+    duration = d;
+    chaosInflicted = cI;
+    killChance = k;
+  }
+}
 
 public enum GameplayTimeStatus
 {

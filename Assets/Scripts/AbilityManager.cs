@@ -176,6 +176,21 @@ public class AbilityManager : MonoBehaviour
     currSelectedAbility = abilityIdx;
   }
 
+  public void ApplyAbilityToMeeplesInRadius(AbilityCastType data, GameObject abilityGO)
+  {
+    AbilityAffectMeepleType abilityAffectData = new AbilityAffectMeepleType(data.ability.actionDuration, data.ability.chaosInfliction, data.ability.killChance);
+    RaycastHit[] hits = Physics.SphereCastAll(abilityGO.transform.position, data.ability.abilityRadius, abilityGO.transform.forward, 0.1f);
+
+    foreach (RaycastHit h in hits)
+    {
+      if (h.collider.gameObject.layer == LayerMask.NameToLayer("Meeple"))
+      {
+        h.collider.gameObject.SendMessage("AbilityEffect", abilityAffectData);
+      }
+    }
+
+  }
+
   public void AsteroidAbility(AbilityCastType data)
   {
     if (abilityCooldownTimers[data.ability] <= 0f)
@@ -196,10 +211,33 @@ public class AbilityManager : MonoBehaviour
     {
       SO_Ability_Snake snake = (SO_Ability_Snake)data.ability.action;
       GameObject snakeGO = Instantiate(snake.snakeModel);
+      snakeGO.layer = LayerMask.NameToLayer("Ability");
       snakeGO.transform.parent = gameObject.transform;
       snakeGO.transform.position = mousePosition;
+      snakeGO.transform.localScale = new Vector3(3, 3, 3);
       Destroy(snakeGO, data.ability.actionDuration);
       abilityCooldownTimers[data.ability] = data.ability.abilityCooldown;
+      ApplyAbilityToMeeplesInRadius(data, snakeGO);
+    }
+    else
+    {
+      eManager.SendMessage("OnErrorEvent", data.ability.abilityName + " Is still on cooldown");
+    }
+  }
+
+  public void SowDivisionAbility(AbilityCastType data)
+  {
+    if(abilityCooldownTimers[data.ability] <= 0f)
+    {
+      SO_Sow_Division_Action division = (SO_Sow_Division_Action)data.ability.action;
+      GameObject abilityGo = Instantiate(division.model);
+      abilityGo.layer = LayerMask.NameToLayer("Ability");
+      abilityGo.transform.parent = gameObject.transform;
+      abilityGo.transform.position = mousePosition;
+      abilityGo.transform.localScale = new Vector3(3, 3, 3);
+      Destroy(abilityGo, data.ability.actionDuration);
+      abilityCooldownTimers[data.ability] = data.ability.abilityCooldown;
+      ApplyAbilityToMeeplesInRadius(data, abilityGo);
     }
     else
     {
@@ -215,9 +253,10 @@ public class AbilityManager : MonoBehaviour
   {
     SO_Ability_Asteroid asteroidAbility = (SO_Ability_Asteroid)data.ability.action;
     GameObject asteroidGo = Instantiate(asteroidAbility.asteroidModel);
-    asteroidGo.transform.position = mousePosition * 4f; //+ (mousePosition * Vector3.Distance(gameplayCamera.transform.position, Vector3.zero));//gameplayCamera.transform.position + gameplayCamera.transform.forward * -1f * 20f; //Should Spawn behind the camera
+    asteroidGo.transform.position = mousePosition * 4f;
+    asteroidGo.transform.localScale = new Vector3(8f, 8f, 8f);
     asteroidGo.transform.LookAt(Vector3.zero);
-    asteroidGo.layer = LayerMask.NameToLayer("Ignore Raycast");
+    asteroidGo.layer = LayerMask.NameToLayer("Ability");
     float velocity = Vector3.Distance(mousePosition, asteroidGo.transform.position) / data.ability.actionDuration;
 
 
@@ -230,6 +269,8 @@ public class AbilityManager : MonoBehaviour
       asteroidGo.transform.position += asteroidGo.transform.forward * velocity * Time.deltaTime;
       yield return null;
     }
+
+    ApplyAbilityToMeeplesInRadius(data, asteroidGo);
 
     Destroy(asteroidGo, data.ability.actionDuration);
     yield return null;
