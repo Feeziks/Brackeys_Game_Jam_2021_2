@@ -6,6 +6,7 @@ using UnityEngine.InputSystem;
 public class InputController : MonoBehaviour
 {
   public Vector2 movement;
+  public float scroll;
   public bool click;
   private AbilityManager abilityManager;
 
@@ -17,6 +18,11 @@ public class InputController : MonoBehaviour
   public void OnMovement(InputAction.CallbackContext context)
   {
     movement = context.ReadValue<Vector2>();
+  }
+
+  public void OnScroll(InputAction.CallbackContext context)
+  {
+    scroll = context.ReadValue<float>();
   }
 
   public void OnClick(InputAction.CallbackContext context)

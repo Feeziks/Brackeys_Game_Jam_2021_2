@@ -10,9 +10,11 @@ public class DayNightCycle : MonoBehaviour
 
   public float rotationSpeed;
 
+  private GameManager gm;
+
   private void Start()
   {
-    
+    gm = FindObjectOfType(typeof(GameManager)) as GameManager;
   }
 
 
@@ -21,9 +23,11 @@ public class DayNightCycle : MonoBehaviour
     //Rotate the lights
 
     //TODO: Pause / time speed changes
-
-    sun.transform.RotateAround(center, Vector3.up, rotationSpeed * Time.deltaTime);
-    moon.transform.RotateAround(center, Vector3.up, rotationSpeed * Time.deltaTime);
+    if (gm.timeState != GameplayTimeStatus.paused)
+    {
+      sun.transform.RotateAround(center, Vector3.up, rotationSpeed * Time.deltaTime * (float)gm.timeState);
+      moon.transform.RotateAround(center, Vector3.up, rotationSpeed * Time.deltaTime * (float)gm.timeState);
+    }
 
   }
 }

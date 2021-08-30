@@ -68,6 +68,14 @@
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
+                },
+                {
+                    "name": "Scroll/Zoom",
+                    "type": "Value",
+                    "id": "a39b8880-a78d-44fe-8f21-4b0ea8995d60",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": ""
                 }
             ],
             "bindings": [
@@ -200,6 +208,17 @@
                     "processors": "",
                     "groups": "Keyboard&Mouse",
                     "action": "Hotkey_6",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2e479412-0568-42a5-af21-78dec7344a56",
+                    "path": "<Mouse>/scroll/y",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Scroll/Zoom",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

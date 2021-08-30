@@ -4,14 +4,17 @@ using UnityEngine;
 
 public class AbilityManager : MonoBehaviour
 {
+  private GameManager gm;
+  private EventManager eManager;
+
   public Camera gameplayCamera;
   public GameObject aoeIndicator;
 
   public List<SO_Ability> allAbilities;
   public InputController inputs;
-
-  private SO_Ability[] currentAbilities;
   public int currSelectedAbility;
+
+  public Dictionary<SO_Ability, float> abilityCooldownTimers;
 
   public Vector3 mousePosition;
   public Ray mouseRay;
@@ -22,10 +25,12 @@ public class AbilityManager : MonoBehaviour
   private void Awake()
   {
     allAbilities = new List<SO_Ability>();
+    abilityCooldownTimers = new Dictionary<SO_Ability, float>();
     InitializeAllAbilities();
-
-    currentAbilities = new SO_Ability[6];
     currSelectedAbility = -1;
+
+    gm = FindObjectOfType(typeof(GameManager)) as GameManager;
+    eManager = FindObjectOfType(typeof(EventManager)) as EventManager;
   }
 
   private void Start()
@@ -47,6 +52,9 @@ public class AbilityManager : MonoBehaviour
     {
       aoeIndicator.SetActive(false);
     }
+
+
+    UpdateAbilityCooldowns();
   }
 
 
@@ -62,6 +70,8 @@ public class AbilityManager : MonoBehaviour
     {
       SO_Ability ability = (SO_Ability)tempAbility;
       allAbilities.Add(ability);
+
+      abilityCooldownTimers[ability] = 0f;
     }
   }
 
@@ -89,22 +99,23 @@ public class AbilityManager : MonoBehaviour
 
   private Vector3 GetMousePositionOnPlanet()
   {
-    /*
-    Vector3 mousePos = gameplayCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, -50f));
-    Ray r = new Ray(mousePos, gameplayCamera.transform.forward);
+    Vector3 mousePos = gameplayCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 100f));
+    Planet p = planet.GetComponent(typeof(Planet)) as Planet;
+    Vector3 point;
+    Vector3 closestPoint = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
+    float minDistance = float.MaxValue;
 
-    RaycastHit hit;
-    if(Physics.Raycast(r, out hit, 1000))
+    foreach (Collider c in p.colliders)
     {
-      return hit.point;
+      point = c.ClosestPoint(mousePos);
+      if (Vector3.Distance(mousePos, point) < minDistance)
+      {
+        minDistance = Vector3.Distance(mousePos, point);
+        closestPoint = point;
+      }
     }
 
-    return Vector3.zero;
-    */
-
-    Vector3 mousePos = gameplayCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 100f));
-    Collider c = planet.GetComponent(typeof(Collider)) as Collider;
-    return c.ClosestPoint(mousePos);
+    return closestPoint;
   }
 
   private void DisplayAbilityAOE()
@@ -120,6 +131,29 @@ public class AbilityManager : MonoBehaviour
     aoeIndicator.SetActive(true);
     aoeIndicator.transform.position = pos;
     aoeIndicator.transform.localScale = new Vector3(radius, radius, radius);
+  }
+
+  private void UpdateAbilityCooldowns()
+  {
+    if (gm.timeState == GameplayTimeStatus.paused)
+      return;
+    /*
+    foreach(KeyValuePair<SO_Ability, float> kvp in abilityCooldownTimers)
+    {
+      if(kvp.Value > 0f)
+      {
+        abilityCooldownTimers[kvp.Key] = kvp.Value - Time.deltaTime * (float)gm.timeState;
+      }
+    }
+    */
+    List<SO_Ability> keys = new List<SO_Ability>(abilityCooldownTimers.Keys);
+    foreach(SO_Ability key in keys)
+    {
+      if(abilityCooldownTimers[key] > 0f)
+      {
+        abilityCooldownTimers[key] -= Time.deltaTime * (float)gm.timeState;
+      }
+    }
   }
 
   #endregion
@@ -144,16 +178,33 @@ public class AbilityManager : MonoBehaviour
 
   public void AsteroidAbility(AbilityCastType data)
   {
-    StartCoroutine(AsteroidAbility_Coroutine(data));
+    if (abilityCooldownTimers[data.ability] <= 0f)
+    {
+      StartCoroutine(AsteroidAbility_Coroutine(data));
+      abilityCooldownTimers[data.ability] = data.ability.abilityCooldown;
+    }
+    else
+    {
+      //Tell the player they have to wait somehow
+      eManager.SendMessage("OnErrorEvent", data.ability.abilityName + " Is still on cooldown");
+    }
   }
 
   public void SnakeAbility(AbilityCastType data)
   {
-    SO_Ability_Snake snake = (SO_Ability_Snake)data.ability.action;
-    GameObject snakeGO = Instantiate(snake.snakeModel);
-    snakeGO.transform.parent = gameObject.transform;
-    snakeGO.transform.position = mousePosition;
-    Destroy(snakeGO, data.ability.actionDuration);
+    if (abilityCooldownTimers[data.ability] <= 0f)
+    {
+      SO_Ability_Snake snake = (SO_Ability_Snake)data.ability.action;
+      GameObject snakeGO = Instantiate(snake.snakeModel);
+      snakeGO.transform.parent = gameObject.transform;
+      snakeGO.transform.position = mousePosition;
+      Destroy(snakeGO, data.ability.actionDuration);
+      abilityCooldownTimers[data.ability] = data.ability.abilityCooldown;
+    }
+    else
+    {
+      eManager.SendMessage("OnErrorEvent", data.ability.abilityName + " Is still on cooldown");
+    }
   }
 
   #endregion

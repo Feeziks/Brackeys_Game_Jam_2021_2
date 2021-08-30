@@ -23,6 +23,11 @@ public class Meeple : MonoBehaviour
 
   public bool currentlyBuilding = false;
 
+  public Dictionary<int, float> numNeighborsToOrder;
+  public float orderTimer = 5f;
+  public float lastOrderTime;
+
+  private GameManager gm;
 
   // Start is called before the first frame update
   void Start()
@@ -34,6 +39,16 @@ public class Meeple : MonoBehaviour
     targetLocation = transform.position;
     sphereLimiterCenter = transform.position;
     lastMoveTime = Time.realtimeSinceStartup;
+
+    numNeighborsToOrder = new Dictionary<int, float>();
+    numNeighborsToOrder[5] = 1;
+    numNeighborsToOrder[6] = 1;
+    numNeighborsToOrder[7] = 2;
+    numNeighborsToOrder[8] = 2;
+    numNeighborsToOrder[9] = 3;
+    numNeighborsToOrder[10] = 4;
+
+    gm = FindObjectOfType(typeof(GameManager)) as GameManager;
   }
 
   // Update is called once per frame
@@ -56,7 +71,7 @@ public class Meeple : MonoBehaviour
 
     if(Physics.Raycast(transform.position, directionToPlanet, out raycastHit, 100f))
     {
-      transform.up = raycastHit.normal;
+      transform.forward = raycastHit.normal;
       transform.position = raycastHit.point + transform.up * meepleGroundOffset;
     }
   }
@@ -65,6 +80,8 @@ public class Meeple : MonoBehaviour
   {
     //Check if any other Meeples have spawned inside our sphere
     RaycastHit[] hits = Physics.SphereCastAll(sphereLimiterCenter, sphereLimiterRadius, transform.forward, 0.1f);
+
+    neighbors.Clear();
 
     foreach(RaycastHit hit in hits)
     {
@@ -78,7 +95,7 @@ public class Meeple : MonoBehaviour
   private void Movement()
   {
     //Pick another spot within the sphere limiter to move to randomly every moveTimer seconds
-    if (Time.realtimeSinceStartup - movementTimer > lastMoveTime)
+    if (Time.realtimeSinceStartup - movementTimer > (lastMoveTime / (float)gm.timeState))
     {
       targetLocation = sphereLimiterCenter + Random.insideUnitSphere * sphereLimiterRadius;
       targetLocation = PlacePointOnPlanetSurface(targetLocation) + transform.up * meepleGroundOffset;
@@ -86,10 +103,10 @@ public class Meeple : MonoBehaviour
       lastMoveTime = Time.realtimeSinceStartup;
     }
 
-    if(transform.position != targetLocation)
+    if(transform.position != targetLocation && gm.timeState != GameplayTimeStatus.paused)
     {
       Vector3 direction = (targetLocation - transform.position).normalized;
-      transform.position += direction * moveSpeed * Time.deltaTime;
+      transform.position += direction * moveSpeed * Time.deltaTime * (float)gm.timeState;
     }   
   }
 
@@ -107,11 +124,24 @@ public class Meeple : MonoBehaviour
   private void Build()
   {
     //If meeples are part of a group they should build, the more meeples present the faster they build
-    if(neighbors.Count >= minTribeSizeToBuild)
+    if(neighbors.Count >= minTribeSizeToBuild && gm.timeState != GameplayTimeStatus.paused)
     {
       //Do some building
       currentlyBuilding = true;
+      if(Time.realtimeSinceStartup - orderTimer > lastOrderTime)
+      {
+        float orderToAdd = 0f;
+        if(neighbors.Count > 10)
+        {
+          orderToAdd = numNeighborsToOrder[10];
+        }
+        else
+        {
+          orderToAdd = numNeighborsToOrder[neighbors.Count];
+        }
 
+        gm.UpdateChaosOrder(0f, orderToAdd);
+      }
     }
   }
 

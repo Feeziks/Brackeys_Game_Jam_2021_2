@@ -13,6 +13,8 @@ public class MeepleManager : MonoBehaviour
   private List<Vector3> previousSpawnPoints;
   private float sphereLimiterRadius = 6f;
 
+  public Material meepleMaterial;
+
   private GameManager gm;
 
   // Start is called before the first frame update
@@ -45,7 +47,8 @@ public class MeepleManager : MonoBehaviour
       bool nearOtherBoid = false;
       do
       {
-        spawnPosition = Random.onUnitSphere * planet.transform.lossyScale.x / 2f;
+        nearOtherBoid = false;
+        spawnPosition = Random.onUnitSphere * planet.transform.localScale.x * 1.3f;
 
         foreach (Vector3 v in previousSpawnPoints)
         {
@@ -67,7 +70,7 @@ public class MeepleManager : MonoBehaviour
       //Otherwise spawn randomly, could be part of a group, could not be
       else
       {
-        spawnPosition = Random.onUnitSphere * planet.transform.lossyScale.x / 2f;
+        spawnPosition = Random.onUnitSphere * planet.transform.lossyScale.x * 1.3f;
 
         foreach (Vector3 v in previousSpawnPoints)
         {
@@ -94,10 +97,12 @@ public class MeepleManager : MonoBehaviour
         GameObject newMeeple = new GameObject("Meeple_" + (spawnedMeeples.Count + 1).ToString());
         newMeeple.transform.parent = transform;
         newMeeple.transform.position = GetNewMeeplePosition();
+        newMeeple.transform.localScale = new Vector3(3f, 3f, 3f);
 
         MeshFilter mf = newMeeple.AddComponent(typeof(MeshFilter)) as MeshFilter;
         mf.mesh = meepleMesh;
         MeshRenderer mr = newMeeple.AddComponent(typeof(MeshRenderer)) as MeshRenderer;
+        mr.material = meepleMaterial;
 
         CapsuleCollider cc = newMeeple.AddComponent(typeof(CapsuleCollider)) as CapsuleCollider;
 
@@ -106,7 +111,7 @@ public class MeepleManager : MonoBehaviour
 
         spawnedMeeples.Add(newMeeple);
       }
-      yield return new WaitForSeconds(meepleSpawnTimer / (float)gm.timeState);
+      yield return new WaitForSeconds(Mathf.Max(meepleSpawnTimer / (float)gm.timeState, 0.1f));
     }
     yield return null;
   }

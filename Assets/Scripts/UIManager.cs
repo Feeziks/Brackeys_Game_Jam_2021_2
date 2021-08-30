@@ -12,9 +12,10 @@ public class UIManager : MonoBehaviour
 
   private GameObject hovered;
   private AbilityManager abilityManager;
-  
+
   private Dictionary<GameObject, int> abilityGameObjectToIndex;
   private Dictionary<GameObject, SO_Ability> abilityGameObjectToAbility;
+  private Dictionary<SO_Ability, GameObject> abilityToGameObject;
   public List<GameObject> abilityGameObjects;
   public List<int> abilityIndices;
   public List<SO_Ability> abilities;
@@ -30,6 +31,12 @@ public class UIManager : MonoBehaviour
   public TextMeshProUGUI scoreText;
   private int score;
 
+  public GameObject errorPanel;
+  public TextMeshProUGUI errorText;
+
+  public GameObject gameOverPanel;
+  public TextMeshProUGUI gameOverText;
+
   #endregion
 
   #region Unity Methods
@@ -39,13 +46,15 @@ public class UIManager : MonoBehaviour
     hovered = null;
     abilityManager = FindObjectOfType(typeof(AbilityManager)) as AbilityManager;
     abilityGameObjectToAbility = new Dictionary<GameObject, SO_Ability>();
+    abilityToGameObject = new Dictionary<SO_Ability, GameObject>();
     abilityGameObjectToIndex = new Dictionary<GameObject, int>();
 
     int idx = 0;
-    foreach(GameObject go in abilityGameObjects)
+    foreach (GameObject go in abilityGameObjects)
     {
       abilityGameObjectToIndex[go] = abilityIndices[idx];
       abilityGameObjectToAbility[go] = abilities[idx];
+      abilityToGameObject[abilities[idx]] = go;
       idx++;
     }
 
@@ -57,7 +66,7 @@ public class UIManager : MonoBehaviour
 
   private void Awake()
   {
-    
+
   }
 
   private void Update()
@@ -66,7 +75,7 @@ public class UIManager : MonoBehaviour
     {
       hovered = GetHoveredObject(GetPointerRaycastResults());
       DisplayToolTip(hovered);
-      if(Input.GetMouseButtonDown(0))
+      if (Input.GetMouseButtonDown(0))
       {
         abilityManager.SendMessage("SelectAbilityFromUI", abilityGameObjectToIndex[hovered]);
       }
@@ -77,6 +86,8 @@ public class UIManager : MonoBehaviour
       hovered = null;
       toolTipGO.SetActive(false);
     }
+
+    UpdateAbilityCooldowns();
   }
 
   #endregion
@@ -87,13 +98,18 @@ public class UIManager : MonoBehaviour
   {
     EventManager.abilityCastEvent += OnAbilityCast;
     EventManager.scoreChangeEvent += UpdateScoreText;
+    EventManager.errorEvent += UpdateErrorText;
+    EventManager.gameOverEvent += UpdateGameOverText;
+    EventManager.chaosOrderChangeEvent += UpdateChaosAndOrder;
   }
 
   private void OnDisable()
   {
     EventManager.abilityCastEvent -= OnAbilityCast;
     EventManager.scoreChangeEvent -= UpdateScoreText;
-
+    EventManager.errorEvent -= UpdateErrorText;
+    EventManager.gameOverEvent -= UpdateGameOverText;
+    EventManager.chaosOrderChangeEvent -= UpdateChaosAndOrder;
   }
 
   private void OnAbilityCast(AbilityCastType data)
@@ -110,9 +126,9 @@ public class UIManager : MonoBehaviour
   //Find if we are hovering over an ability
   private GameObject GetHoveredObject(List<RaycastResult> raycasts)
   {
-    for(int index = 0; index < raycasts.Count; index++)
+    for (int index = 0; index < raycasts.Count; index++)
     {
-      if(raycasts[index].gameObject.layer == LayerMask.NameToLayer("UI"))
+      if (raycasts[index].gameObject.layer == LayerMask.NameToLayer("UI"))
       {
         return raycasts[index].gameObject;
       }
@@ -132,8 +148,8 @@ public class UIManager : MonoBehaviour
 
   public void DisplayToolTip(GameObject abilityGameObject)
   {
-    if(abilityGameObject == null)
-        return;
+    if (abilityGameObject == null)
+      return;
 
     if (!abilityGameObjectToAbility.ContainsKey(abilityGameObject))
       return;
@@ -155,8 +171,11 @@ public class UIManager : MonoBehaviour
   {
     //1f == full; 0f == empty;
 
-    chaosBar.sizeDelta = new Vector2(chaosOrderPanel.rect.width / chaos, chaosOrderPanel.rect.height);
-    orderBar.sizeDelta = new Vector2(chaosOrderPanel.rect.width / chaos, chaosOrderPanel.rect.height);
+    float chaosPercent = chaos / (chaos + order);
+    float orderPercent = order / (chaos + order);
+
+    chaosBar.sizeDelta = new Vector2(chaosPercent, chaosOrderPanel.rect.height);
+    orderBar.sizeDelta = new Vector2(orderPercent, chaosOrderPanel.rect.height);
   }
 
   public void UpdateScoreText(int scoreChange)
@@ -165,18 +184,65 @@ public class UIManager : MonoBehaviour
     scoreText.text = score.ToString();
   }
 
+  public void UpdateErrorText(string eText)
+  {
+    errorPanel.SetActive(true);
+    errorText.text = eText;
+
+    StartCoroutine("ErrorTextCoroutine");
+  }
+
+  private void UpdateGameOverText(int finalScore)
+  {
+    gameOverPanel.SetActive(true);
+    gameOverText.text = "";
+    gameOverText.text += "This world's inhabitants have created too much order!\n";
+    gameOverText.text += "You maintained chaos as best you could Loki\n";
+    gameOverText.text += "Final score: " + finalScore;
+  }
+
   #endregion
 
   #region helpers
+  public int GetScore()
+  {
+    return score;
+  }
 
   private void UpdateAbilitySprites()
   {
-    foreach(GameObject go in abilityGameObjects)
+    foreach (GameObject go in abilityGameObjects)
     {
       Image im = go.GetComponent(typeof(Image)) as Image;
 
       im.sprite = abilityGameObjectToAbility[go].abilitySprite;
     }
+  }
+
+  private void UpdateAbilityCooldowns()
+  {
+    foreach (KeyValuePair<SO_Ability, float> kvp in abilityManager.abilityCooldownTimers)
+    {
+      Image im = abilityToGameObject[kvp.Key].GetComponent(typeof(Image)) as Image;
+      //Black == 100% of cooldown remaining
+      //white == 0% ability is useable
+      float percentage = kvp.Value / kvp.Key.abilityCooldown;
+      im.color = Color.Lerp(Color.white, Color.black, percentage);
+    }
+  }
+
+  #endregion
+
+  #region Coroutines
+
+  public IEnumerator ErrorTextCoroutine()
+  {
+    yield return new WaitForSecondsRealtime(3f);
+
+    errorPanel.SetActive(false);
+    errorText.text = "";
+
+    yield return null;
   }
 
   #endregion
